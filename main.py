@@ -1,0 +1,63 @@
+# ใน main.py
+from book import Book
+from library import Library
+
+def show_menu():
+    print("\n" + "="*40)
+    print("🏛️  ระบบห้องสมุด")
+    print("="*40)
+    print("1. เพิ่มหนังสือ")
+    print("2. แสดงหนังสือทั้งหมด")
+    print("3. ค้นหาหนังสือ")
+    print("4. ลบหนังสือ")
+    print("5. ออกจากโปรแกรม")
+    print("="*40)
+
+def main():
+    my_library = Library("ห้องสมุดประชาชน")
+
+    while True:
+        show_menu()
+        choice = input("เลือกเมนู (1-5): ")
+
+        if choice == "1":
+            # เพิ่มหนังสือ
+            print("\n📚 เพิ่มหนังสือใหม่")
+            title = input("ชื่อหนังสือ: ")
+            author = input("ผู้แต่ง: ")
+            isbn = input("ISBN: ")
+
+            book = Book(title, author, isbn)
+            my_library.add_book(book)
+
+        elif choice == "2":
+            # แสดงหนังสือทั้งหมด
+            my_library.display_books()
+
+        elif choice == "3":
+            # ค้นหาหนังสือ
+            title = input("\n🔍 ค้นหาหนังสือ: ")
+            result = my_library.search_book(title)
+            if result:
+                print(f"✅ เจอ: {result}")
+            else:
+                print("❌ ไม่พบหนังสือที่ค้นหา")
+
+        elif choice == "4":
+            # ลบหนังสือ
+            isbn = input("\n🗑️  ใส่ ISBN ที่จะลบ: ")
+            my_library.remove_book(isbn)
+
+        elif choice == "5":
+            # ออกจากโปรแกรม
+            print("\n👋 ขอบคุณที่ใช้บริการ!")
+            break
+
+        else:
+            print("❌ กรุณาเลือก 1-5 เท่านั้น")
+
+        # รอให้ผู้ใช้กด Enter ก่อนแสดงเมนูใหม่
+        input("\nกด Enter เพื่อดำเนินการต่อ...")
+
+if __name__ == "__main__":
+    main()
