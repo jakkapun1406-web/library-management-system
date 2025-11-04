@@ -1,4 +1,6 @@
 # library.py
+from datetime import datetime
+
 class Library:
     def __init__(self, name):
         self.name = name
@@ -37,32 +39,54 @@ class Library:
                 return True
         print(f"ไม่พบหนังสือที่มี ISBN: {isbn}")
         return False
-#ยืมหนังสือ
-def borrow_book(self, isbn):
-    """ยืมหนังสือ"""
-    for book in self.books:
-        if getattr(book, "isbn", None) == isbn:
-            if not book.is_borrowed:
-                book.is_borrowed = True
-                print(f"✅ ยืมหนังสือสำเร็จ: {book}")
-                return True
-            else:
-                print(f"❌ หนังสือถูกยืมไปแล้ว")
-                return False
-    print(f"❌ ไม่พบหนังสือที่มี ISBN: {isbn}")
-    return False
-
-def return_book(self, isbn):
-    """คืนหนังสือ"""
-    for book in self.books:
-        if getattr(book, "isbn", None) == isbn:
-            if book.is_borrowed:
-                book.is_borrowed = False
-                print(f"✅ คืนหนังสือสำเร็จ: {book}")
-                return True
-            else:
-                print(f"❌ หนังสือนี้ไม่ได้ถูกยืม")
-                return False
-    print(f"❌ ไม่พบหนังสือที่มี ISBN: {isbn}")
-    return False
-
+    #ยืมหนังสือ
+    def borrow_book(self, isbn,member_name):
+        """ยืมหนังสือ"""
+        for book in self.books:
+            if getattr(book, "isbn", None) == isbn:
+                if not book.is_borrowed:
+                    book.is_borrowed = True
+                    book.borrowed_by = member_name  # เพิ่มข้อมูลผู้ยืม
+                    book.borrowed_date = datetime.now()  # เพิ่มวันที่ยืม (ต้อง import datetime)
+                    print(f"✅ {member_name} ยืม '{book.title}' สำเร็จ")
+                    return True
+                else:
+                    # บอกว่าถูกใครยืมไปแล้ว
+                    borrower = getattr(book, "borrowed_by", "ไม่ทราบ")
+                    print(f"❌ หนังสือถูก {borrower} ยืมไปแล้ว")
+                    return False
+        print(f"❌ ไม่พบหนังสือ ISBN: {isbn}")
+        return False
+    def return_book(self, isbn):
+        """คืนหนังสือ"""
+        for book in self.books:
+            if getattr(book, "isbn", None) == isbn:
+                if book.is_borrowed:
+                    borrowed_by = getattr(book, "borrowed_by", "ไม่ทราบ")
+                    book.is_borrowed = False
+                    book.borrowed_by = None  # ลบข้อมูลผู้ยืม
+                    book.borrowed_date = None  # ลบวันที่ยืม
+                    print(f"✅ {borrowed_by} คืน '{book.title}' สำเร็จ")
+                    return True
+                else:
+                    print(f"❌ หนังสือนี้ไม่ได้ถูกยืม")
+                    return False
+        print(f"❌ ไม่พบหนังสือ ISBN: {isbn}")
+        return False
+    def show_borrowed_books(self):
+        """แสดงหนังสือที่ถูกยืมทั้งหมด"""
+        borrowed = [book for book in self.books if book.is_borrowed]
+    
+        if borrowed:
+            print(f"\n📋 หนังสือที่ถูกยืม ({len(borrowed)} เล่ม):")
+            print("="*60)
+            for book in borrowed:
+                borrower = getattr(book, "borrowed_by", "ไม่ทราบ")
+                date = getattr(book, "borrowed_date", None)
+                if date:
+                    days = (datetime.now() - date).days
+                    print(f"- {book.title} (ยืมโดย: {borrower}, {days} วันแล้ว)")
+                else:
+                    print(f"- {book.title} (ยืมโดย: {borrower})")
+        else:
+            print("\n✅ ไม่มีหนังสือที่ถูกยืม")
