@@ -1,5 +1,6 @@
 # library.py
 from datetime import datetime
+import json
 
 class Library:
     def __init__(self, name):
@@ -90,3 +91,26 @@ class Library:
                     print(f"- {book.title} (ยืมโดย: {borrower})")
         else:
             print("\n✅ ไม่มีหนังสือที่ถูกยืม")
+    
+    def save_to_file(self,filename="library_data.json"):
+        """บันทึกข้อมูลลงไฟล์ JSON"""
+        
+        # สร้างกล่องใส่ข้อมูล
+        data = {
+            "library_name":self.name, # ชื่อห้องสมุด (เช่น "ห้องสมุดประชาชน")
+            "book":[]   # รายการหนังสือ (ตอนนี้ยังว่าง)
+
+        }
+        
+        # วนลูปดูหนังสือทุกเล่ม
+        for book in self.books:
+            # สร้าง Dictionary สำหรับหนังสือแต่ละเล่ม
+            book_data ={
+                "title": book.title,
+                "author": book.author,
+                "isbn": book.isbn,
+                "is_borrowed": book.is_borrowed,
+                "borrowed_by": book.borrowed_date.isoformat() if book.borrowed_date else None
+                }
+            # ใส่เข้ากล่อง
+            data["books"].append(book_data)
