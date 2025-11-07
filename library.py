@@ -98,7 +98,7 @@ class Library:
         # สร้างกล่องใส่ข้อมูล
         data = {
             "library_name":self.name, # ชื่อห้องสมุด (เช่น "ห้องสมุดประชาชน")
-            "book":[]   # รายการหนังสือ (ตอนนี้ยังว่าง)
+            "books":[]   # รายการหนังสือ (ตอนนี้ยังว่าง)
 
         }
         
@@ -111,6 +111,16 @@ class Library:
                 "isbn": book.isbn,
                 "is_borrowed": book.is_borrowed,
                 "borrowed_by": book.borrowed_date.isoformat() if book.borrowed_date else None
-                }
+            }
             # ใส่เข้ากล่อง
             data["books"].append(book_data)
+    # บันทึกลงไฟล์
+
+        try:
+            with open(filename,'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            print(f"✅ บันทึกข้อมูลสำเร็จ ({len(self.books)} เล่ม)")
+            return True
+        except Exception as e:
+            print(f"❌ เกิดข้อผิดพลาด: {e}")
+            return False
