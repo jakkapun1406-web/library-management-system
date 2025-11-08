@@ -110,7 +110,8 @@ class Library:
                 "author": book.author,
                 "isbn": book.isbn,
                 "is_borrowed": book.is_borrowed,
-                "borrowed_by": book.borrowed_date.isoformat() if book.borrowed_date else None
+                "borrowed_by": book.borrowed_by,
+                "borrowed_date": book.borrowed_date.isoformat() if book.borrowed_date else None
             }
             # ใส่เข้ากล่อง
             data["books"].append(book_data)
@@ -124,3 +125,41 @@ class Library:
         except Exception as e:
             print(f"❌ เกิดข้อผิดพลาด: {e}")
             return False
+    
+    def load_from_file(self, filename="library_data.json"):
+        """โหลดข้อมูลจากไฟล์ JSON"""
+        try:
+            # เปิดไฟล์อ่าน
+            with open(filename,'r',encoding='utf-8') as f:
+                data = json.load(f)
+
+            # ดึงชื่อห้องสมุด
+            self.name = data["library_name"]
+            self.books = []
+
+            # วนลูปสร้างหนังสือจากข้อมูล
+            for book_data in data ["books"]:
+                from book import Book
+                book = Book(
+                    book_data["title"],
+                    book_data["author"],
+                    book_data["isbn"]
+                )
+                book.is_borrowed = book_data["is_borrowed"]
+                book.borrowed_by = book_data.get("borrowed_by")
+            
+                # แปลง string กลับเป็น datetime
+                if book_data.get("borrowed_date"):
+                    book.borrowed_date = datetime.fromisoformat(book_data["borrowed_date"])
+
+                self.books.append(book)
+
+            print(f"✅ โหลดข้อมูล {len(self.books)} เล่ม")
+            return True
+    
+        except FileNotFoundError:
+            print("⚠️  ไม่พบไฟล์ข้อมูล - เริ่มต้นใหม่")
+            return False
+        except Exception as e:
+            print(f"❌ เกิดข้อผิดพลาด: {e}")
+            return
